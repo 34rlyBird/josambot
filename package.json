@@ -7,7 +7,7 @@
   "author": "34rlyBird",
   "license": "MIT",
   "scripts": {
-    "start": "tsc && node dist/src/index.js"
+    "start": "bun run ./src/index.ts"
   },
   "devDependencies": {
     "@types/node": "^20.11.25",

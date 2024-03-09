@@ -23,4 +23,9 @@ client.on("messageCreate", (message) => {
     message.react("👎");
   }
 });
+// on reaction
+client.on("messageReactionAdd", (reaction, user) => {
+  console.log(`Reaction added by ${user.tag}`);
+  console.log(reaction.emoji.name);
+});
 client.login(token);
