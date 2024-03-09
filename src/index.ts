@@ -16,5 +16,11 @@ client.on("messageCreate", (message) => {
   if (message.content === "!ping") {
     message.reply("Pong!");
   }
+  // check if message contains image
+  if (message.attachments.some((attachment) => attachment.contentType?.startsWith("image"))) {
+    // add +1, -1 reaction
+    message.react("👍");
+    message.react("👎");
+  }
 });
 client.login(token);
