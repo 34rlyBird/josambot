@@ -11,6 +11,7 @@ client.once("ready", () => {
   console.log("Bot is ready");
 });
 client.on("messageCreate", (message) => {
+  if (message.author.bot) return;
   console.log(message.content);
   if (message.content === "!ping") {
     message.reply("Pong!");
