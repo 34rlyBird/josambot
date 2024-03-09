@@ -1,0 +1,32 @@
+{
+  "name": "josambot",
+  "version": "1.0.0",
+  "description": "34rlyBird Discord Bot",
+  "main": "src/index.ts",
+  "repository": "https://github.com/34rlyBird/josambot.git",
+  "author": "34rlyBird",
+  "license": "MIT",
+  "scripts": {
+    "start": "tsc && node dist/src/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.25",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^7.1.1",
+    "eslint": "^8.0.1",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-import": "^0.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-import-newlines": "^1.3.4",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-unused-imports": "^3.1.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1"
+  }
+}
