@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import * as dotenv from "dotenv";
+import mongoose from "mongoose";
 
 dotenv.config();
 const token = process.env.DISCORD_BOT_TOKEN;
