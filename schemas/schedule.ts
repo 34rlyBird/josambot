@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const scheduleSchema = new Schema({
+const ScheduleSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -13,6 +13,6 @@ const scheduleSchema = new Schema({
     enum: ["Mon", "Tue", "Wed", "Thu", "Fri"],
     required: true
   }
-});
+})
 
-module.exports = mongoose.model("Schedule", scheduleSchema);
+module.exports = mongoose.model("Schedule", ScheduleSchema);

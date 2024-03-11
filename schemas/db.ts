@@ -1,19 +1,10 @@
-import mongoose from "mongoose";
-
+const mongoose = require('mongoose');
 const dbUrl = "mongodb://localhost:27017/admin";
 
 const connect = () => {
   mongoose.connect(dbUrl, {
     dbName: "nodejs",
-    useNewUrlParser: true,
-    useCreateIndex: true,
-  }, (error) => {
-    if (error) {
-      console.log("몽고디비 연결 에러", error);
-    } else {
-      console.log("몽고디비 연결 성공");
-    }
-  });
+  })
 };
 
 mongoose.connection.on('error', (error) => {
