@@ -7,7 +7,7 @@ const connect = () => {
   })
 };
 
-mongoose.connection.on('error', (error) => {
+mongoose.connection.on('error', (error: any) => {
   console.error('몽고디비 연결 에러', error);
 });
 
