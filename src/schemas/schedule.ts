@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-
+import mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const ScheduleSchema = new Schema({
