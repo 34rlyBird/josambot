@@ -1,5 +1,7 @@
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import * as dotenv from "dotenv";
+import "./opendb"
+import Msg  from "./schemas/msg";
 
 dotenv.config();
 const token = process.env.DISCORD_BOT_TOKEN;
@@ -16,11 +18,17 @@ const client = new Client({
 client.once("ready", () => {
   console.log("Bot is ready");
 });
-client.on("messageCreate", (message) => {
+client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   console.log(message.content);
   if (message.content === "!ping") {
     message.reply("Pong!");
+  } else if (message.content === "!read") {
+    message.reply("그동안 저에게 하신 말들이에요...");
+    const query = await Msg.find({});
+    message.reply(query.map((msg) => `${msg.name}: ${msg.msg}`).join("\n"));
+  } else {
+    Msg.create({ name: message.author.username, msg: message.content })
   }
   // check if message contains image
   if (message.attachments.some((attachment) => attachment.contentType?.startsWith("image"))) {
