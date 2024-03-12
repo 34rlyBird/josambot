@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, Partials } from "discord.js";
 import * as dotenv from "dotenv";
 import "./opendb"
-import Msg  from "./schemas/msg";
+import Sch from "./schemas/schedule";
 
 dotenv.config();
 const token = process.env.DISCORD_BOT_TOKEN;
@@ -23,12 +23,17 @@ client.on("messageCreate", async (message) => {
   console.log(message.content);
   if (message.content === "!ping") {
     message.reply("Pong!");
-  } else if (message.content === "!read") {
-    message.reply("그동안 저에게 하신 말들이에요...");
-    const query = await Msg.find({});
-    message.reply(query.map((msg) => `${msg.name}: ${msg.msg}`).join("\n"));
-  } else {
-    Msg.create({ name: message.author.username, msg: message.content })
+  } else if (message.content === "!offday") {
+    const query = await Sch.find({ name: message.author.username });
+    message.reply(query.map((msg) => `${msg.offday}`).join("\n"));
+  } else if (message.content === "!offdayall") {
+    const query = await Sch.find();
+    message.reply(query.map((msg) => `${msg.name}: ${msg.offday}`).join("\n"));
+  } else if (message.content === "!todayoffmem") {
+    const today = new Date(message.createdTimestamp).getDay();
+    const offday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const query = await Sch.find({ offday: offday[today] });
+    message.reply(query.map((msg) => `${msg.name}`).join("\n"));
   }
   // check if message contains image
   if (message.attachments.some((attachment) => attachment.contentType?.startsWith("image"))) {
