@@ -1,7 +1,8 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js";
+import { Client, GatewayIntentBits, Partials, Events } from "discord.js";
 import * as dotenv from "dotenv";
 import "./opendb"
 import Sch from "./schemas/schedule";
+import { W } from "mongodb";
 
 dotenv.config();
 const token = process.env.DISCORD_BOT_TOKEN;
@@ -11,6 +12,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMembers,
   ],
   partials: [Partials.Channel, Partials.Reaction, Partials.Message],
 });
@@ -23,17 +25,18 @@ client.on("messageCreate", async (message) => {
   console.log(message.content);
   if (message.content === "!ping") {
     message.reply("Pong!");
-  } else if (message.content === "!offday") {
+  } else if (message.content === "!offday" || message.content === "!쉬는날") {
     const query = await Sch.find({ name: message.author.username });
-    message.reply(query.map((msg) => `${msg.offday}`).join("\n"));
-  } else if (message.content === "!offdayall") {
+    const answer = message.member?.nickname + "님의 쉬는 날은 " + query.map((msg: any) => `${msg.offday}`).join("") +"네요.";
+    message.reply(answer);
+  } else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
     const query = await Sch.find();
-    message.reply(query.map((msg) => `${msg.name}: ${msg.offday}`).join("\n"));
-  } else if (message.content === "!todayoffmem") {
+    message.reply(query.map((msg: any) => `${msg.name}님은 ${msg.offday}에 쉬시는군요.`).join("\n"));
+  } else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
     const today = new Date(message.createdTimestamp).getDay();
     const offday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const query = await Sch.find({ offday: offday[today] });
-    message.reply(query.map((msg) => `${msg.name}`).join("\n"));
+    message.reply(query.map((msg: any) => `${msg.name}`).join("\n"));
   }
   // check if message contains image
   if (message.attachments.some((attachment) => attachment.contentType?.startsWith("image"))) {
@@ -65,4 +68,12 @@ client.on("messageReactionAdd", async (reaction, user) => {
     console.log("👎", reaction.count);
   }
 });
+client.once(Events.ClientReady , async (client) => {
+  const guild = client.guilds.cache.get("1215468545886912512");
+
+  let res = await guild.members.fetch();
+  res.forEach((member: any) => {
+    console.log(member.user.username);
+  });
+})
 client.login(token);
