@@ -36,8 +36,7 @@ client.on("messageCreate", async (message) => {
     message.reply(
       query
         .map(async (msg: any) => {
-          const name = await GetName(msg.id);
-          const ret = `${name} 님은 ${msg.offday}에 쉬시는군요.`;
+          const ret = `${await GetName(msg.id)}님은 ${msg.offday}에 쉬시는군요.`;
           return ret;
         })
         .join("\n"),
