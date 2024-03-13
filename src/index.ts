@@ -37,7 +37,7 @@ client.on("messageCreate", async (message) => {
       query
         .map(async (msg: any) => {
           const name = await GetName(msg.id);
-          const ret = ` 님은 ${msg.offday}에 쉬시는군요.`;
+          const ret = `${name} 님은 ${msg.offday}에 쉬시는군요.`;
           return ret;
         })
         .join("\n"),
@@ -84,8 +84,8 @@ client.on("messageReactionAdd", async (reaction, user) => {
 });
 
 // Set up database here
-client.once(Events.ClientReady, async (client) => {
-  const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID!);
+client.once(Events.ClientReady, async (cli: any) => {
+  const guild = cli.guilds.cache.get(process.env.DISCORD_GUILD_ID!);
 
   if (!guild) {
     console.error("No guild found");
