@@ -69,7 +69,12 @@ client.on("messageReactionAdd", async (reaction, user) => {
   }
 });
 client.once(Events.ClientReady , async (client) => {
-  const guild = client.guilds.cache.get("1215468545886912512");
+  const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID!);
+
+  if (!guild) {
+    console.error("No guild found");
+    return;
+  }
 
   let res = await guild.members.fetch();
   res.forEach((member: any) => {
