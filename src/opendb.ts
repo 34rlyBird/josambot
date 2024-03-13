@@ -1,6 +1,3 @@
-import "./db"
-
-const Schedule = require("./schemas/schedule")
 const express = require('express');
 
 function handleListening() {
@@ -9,4 +6,8 @@ function handleListening() {
 
 const app = express();
 
-app.listen(3000, handleListening);
+function startListen() {
+  app.listen(3000, handleListening);
+}
+
+export { startListen };

@@ -15,9 +15,12 @@ const Id2NickSchema = new Schema({
 
 const i2nModel = mongoose.model("Id2Nick", Id2NickSchema);
 
-async function Id2Nick(getid: String) {
+async function GetName(getid: String) {
   const query = await i2nModel.find({ id: getid });
-  return query.map((rec: any) => `${rec.nick}`).join("");
+  const retName = query.map((rec: any) => `${rec.nick}`).join("");
+  const logging = "In GetName... (id) " + getid + "  -> (name) " + retName;
+  console.log(logging);
+  return retName;
 }
 
-export { i2nModel, Id2Nick };
+export { i2nModel, GetName };

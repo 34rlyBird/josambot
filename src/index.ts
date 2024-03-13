@@ -1,10 +1,8 @@
 import { Client, GatewayIntentBits, Partials, Events } from "discord.js";
 import * as dotenv from "dotenv";
-import "./opendb"
 import ScheModel from "./schemas/schedule";
-import { set } from "mongoose";
 import { setupdb } from "./setdb";
-import { i2nModel, Id2Nick } from "./schemas/id2nick";
+import { GetName } from "./schemas/id2nick";
 
 dotenv.config();
 const token = process.env.DISCORD_BOT_TOKEN;
@@ -29,16 +27,30 @@ client.on("messageCreate", async (message) => {
     message.reply("Pong!");
   } else if (message.content === "!offday" || message.content === "!쉬는날") {
     const query = await ScheModel.find({ id: message.author.username });
-    const answer = message.member?.nickname + "님의 쉬는 날은 " + query.map((msg: any) => `${msg.offday}`).join("") +"네요.";
+    const answer = `${message.member?.nickname}님의 쉬는 날은 ${query
+      .map((msg: any) => `${msg.offday}`)
+      .join("")}네요.`;
     message.reply(answer);
   } else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
     const query = await ScheModel.find();
-    message.reply(query.map((msg: any) => `${msg.id}님은 ${msg.offday}에 쉬시는군요.`).join("\n"));
+    message.reply(
+      query
+        .map(async (msg: any) => {
+          const name = await GetName(msg.id);
+          const ret = ` 님은 ${msg.offday}에 쉬시는군요.`;
+          return ret;
+        })
+        .join("\n"),
+    );
   } else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
     const today = new Date(message.createdTimestamp).getDay();
     const offday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const query = await ScheModel.find({ offday: offday[today] });
-    message.reply(query.map((msg: any) => `${msg.name}`).join("\n"));
+    if (today === 0 || today === 6) {
+      message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
+    } else {
+      const query = await ScheModel.find({ offday: offday[today] });
+      message.reply(query.map((msg: any) => GetName(msg.id)).join("\n"));
+    }
   }
   // check if message contains image
   if (message.attachments.some((attachment) => attachment.contentType?.startsWith("image"))) {
@@ -70,7 +82,9 @@ client.on("messageReactionAdd", async (reaction, user) => {
     console.log("👎", reaction.count);
   }
 });
-client.once(Events.ClientReady , async (client) => {
+
+// Set up database here
+client.once(Events.ClientReady, async (client) => {
   const guild = client.guilds.cache.get(process.env.DISCORD_GUILD_ID!);
 
   if (!guild) {
@@ -78,12 +92,7 @@ client.once(Events.ClientReady , async (client) => {
     return;
   }
 
-  await setupdb();
+  await setupdb(guild);
+});
 
-  let res = await guild.members.fetch();
-  res.forEach((member: any) => {
-    const mem = { id: member.user.id, nick: member.nickname };
-    i2nModel.create(mem);
-  });
-})
 client.login(token);
