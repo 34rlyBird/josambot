@@ -1,8 +1,10 @@
 import { Client, GatewayIntentBits, Partials, Events } from "discord.js";
 import * as dotenv from "dotenv";
 import "./opendb"
-import Sch from "./schemas/schedule";
-import { W } from "mongodb";
+import ScheModel from "./schemas/schedule";
+import { set } from "mongoose";
+import { setupdb } from "./setdb";
+import { i2nModel, Id2Nick } from "./schemas/id2nick";
 
 dotenv.config();
 const token = process.env.DISCORD_BOT_TOKEN;
@@ -26,16 +28,16 @@ client.on("messageCreate", async (message) => {
   if (message.content === "!ping") {
     message.reply("Pong!");
   } else if (message.content === "!offday" || message.content === "!쉬는날") {
-    const query = await Sch.find({ name: message.author.username });
+    const query = await ScheModel.find({ id: message.author.username });
     const answer = message.member?.nickname + "님의 쉬는 날은 " + query.map((msg: any) => `${msg.offday}`).join("") +"네요.";
     message.reply(answer);
   } else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
-    const query = await Sch.find();
-    message.reply(query.map((msg: any) => `${msg.name}님은 ${msg.offday}에 쉬시는군요.`).join("\n"));
+    const query = await ScheModel.find();
+    message.reply(query.map((msg: any) => `${msg.id}님은 ${msg.offday}에 쉬시는군요.`).join("\n"));
   } else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
     const today = new Date(message.createdTimestamp).getDay();
     const offday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-    const query = await Sch.find({ offday: offday[today] });
+    const query = await ScheModel.find({ offday: offday[today] });
     message.reply(query.map((msg: any) => `${msg.name}`).join("\n"));
   }
   // check if message contains image
@@ -76,9 +78,12 @@ client.once(Events.ClientReady , async (client) => {
     return;
   }
 
+  await setupdb();
+
   let res = await guild.members.fetch();
   res.forEach((member: any) => {
-    console.log(member.user.username);
+    const mem = { id: member.user.id, nick: member.nickname };
+    i2nModel.create(mem);
   });
 })
 client.login(token);

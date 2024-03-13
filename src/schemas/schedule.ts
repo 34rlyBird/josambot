@@ -2,7 +2,7 @@ import mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const ScheduleSchema = new Schema({
-  name: {
+  id: {
     type: String,
     required: true,
     unique: true
@@ -14,6 +14,4 @@ const ScheduleSchema = new Schema({
   }
 })
 
-const scheduleModel = mongoose.model("Schedule", ScheduleSchema);
-
-export default scheduleModel;
+module.exports = mongoose.model("Schedule", ScheduleSchema);
