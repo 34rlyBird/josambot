@@ -31,15 +31,18 @@ client.on("messageCreate", async (message) => {
       .map((msg: any) => `${msg.offday}`)
       .join("")}네요.`;
     message.reply(answer);
-  } else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
+  } else if (
+    message.content === "!offdayall" ||
+    message.content === "!모두의쉬는날" ||
+    message.content === "!q"
+  ) {
     const query = await ScheModel.find();
     message.reply(
-      query
-        .map(async (msg: any) => {
-          const ret = `${await GetName(msg.id)}님은 ${msg.offday}에 쉬시는군요.`;
-          return ret;
-        })
-        .join("\n"),
+      (
+        await Promise.all(
+          query.map(async (msg: any) => `${await GetName(msg.id)}님의 쉬는 날은 ${msg.offday}요일이네요.`),
+        )
+      ).join("\n"),
     );
   } else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
     const today = new Date(message.createdTimestamp).getDay();
@@ -48,7 +51,8 @@ client.on("messageCreate", async (message) => {
       message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
     } else {
       const query = await ScheModel.find({ offday: offday[today] });
-      message.reply(query.map((msg: any) => GetName(msg.id)).join("\n"));
+      const rep = query.map(async (msg: any) => `${await GetName(msg.id)}`).join("\n");
+      message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님은 쉬시는군요.`);
     }
   }
   // check if message contains image
