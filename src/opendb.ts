@@ -1,4 +1,4 @@
-const express = require('express');
+import express from "express";
 
 function handleListening() {
   console.log("Listening to localhost:3000/");

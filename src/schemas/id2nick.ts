@@ -1,4 +1,4 @@
-import mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
@@ -19,8 +19,6 @@ const i2nModel = mongoose.model("Id2Nick", Id2NickSchema);
 async function GetName(getid: string) {
   const query = await i2nModel.find({ id: getid });
   const retName = query.map((rec: any) => `${rec.nick}`).join("");
-  const logging = `In GetName... (id) ${getid}  -> (name) ${retName}`;
-  console.log(logging);
   return retName;
 }
 

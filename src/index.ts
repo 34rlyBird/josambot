@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits, Partials, Events } from "discord.js";
 import * as dotenv from "dotenv";
+import { Cursor } from "mongoose";
 import ScheModel from "./schemas/schedule";
 import { setupdb } from "./setdb";
 import { GetName } from "./schemas/id2nick";
@@ -28,8 +29,8 @@ client.on("messageCreate", async (message) => {
   } else if (message.content === "!offday" || message.content === "!쉬는날") {
     const query = await ScheModel.find({ id: message.author.username });
     const answer = `${message.member?.nickname}님의 쉬는 날은 ${query
-      .map((msg: any) => `${msg.offday}`)
-      .join("")}네요.`;
+      .map((msg: Cursor) => `${msg.offday}`)
+      .join("")}요일이네요.`;
     message.reply(answer);
   } else if (
     message.content === "!offdayall" ||
@@ -46,13 +47,14 @@ client.on("messageCreate", async (message) => {
     );
   } else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
     const today = new Date(message.createdTimestamp).getDay();
-    const offday = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const offday = ["일", "월", "화", "수", "목", "금", "토"];
     if (today === 0 || today === 6) {
       message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
     } else {
       const query = await ScheModel.find({ offday: offday[today] });
-      const rep = query.map(async (msg: any) => `${await GetName(msg.id)}`).join("\n");
-      message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님은 쉬시는군요.`);
+      const rep = (await Promise.all(query.map(async (msg: any) => `${await GetName(msg.id)}`))).join("\n");
+      if (rep === "") message.reply(`오늘은 ${offday[today]}요일이네요. \n모두 나오는 날이에요!`);
+      else message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님은 쉬시는군요.`);
     }
   }
   // check if message contains image

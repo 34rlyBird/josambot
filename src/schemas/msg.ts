@@ -1,4 +1,5 @@
 import mongoose = require("mongoose");
+
 const { Schema } = mongoose;
 
 const MsgSchema = new Schema({
@@ -9,7 +10,7 @@ const MsgSchema = new Schema({
   msg: {
     type: String,
     required: true,
-  }
+  },
 });
 
 const msgModel = mongoose.model("Msg", MsgSchema);

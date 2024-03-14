@@ -6,12 +6,12 @@ const donateSchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   amount: {
     type: Number,
-    required: true
-  }
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Donate", donateSchema);
