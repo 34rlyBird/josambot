@@ -16,6 +16,7 @@ on:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
+    # 매주 화요일 6:30 -- 깃헙이 정해줬는데 왜인지는 몰름.
     - cron: '30 6 * * 2'
 
 jobs:
