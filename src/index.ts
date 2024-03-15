@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, Partials, Events } from "discord.js";
 import * as dotenv from "dotenv";
 import ScheModel from "./schemas/schedule";
-import { setupdb } from "./setdb";
+import setupdb from "./setdb";
 import { GetName } from "./schemas/id2nick";
 
 dotenv.config();

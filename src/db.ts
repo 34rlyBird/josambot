@@ -24,4 +24,4 @@ async function ClearCollections() {
   }
 }
 
-export { ClearCollections };
+export default ClearCollections;
