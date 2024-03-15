@@ -3,6 +3,7 @@ import * as dotenv from "dotenv";
 import ScheModel from "./schemas/schedule";
 import setupdb from "./setdb";
 import { GetName } from "./schemas/id2nick";
+import GetDay from "./schemas/getday";
 
 dotenv.config();
 const token = process.env.DISCORD_BOT_TOKEN;
@@ -30,7 +31,14 @@ client.on("messageCreate", async (message) => {
     message.reply(
       (
         await Promise.all(
-          query.map(async (sche: any) => `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`),
+          query.map(async (sche: any) => {
+            const answer = `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`;
+
+            if (GetDay(sche.offday) === new Date(message.createdTimestamp).getDay()) {
+              return `${answer} 오늘은 쉬는 날이에요!`;
+            }
+            return answer;
+          }),
         )
       ).join("\n"),
     );
@@ -50,7 +58,7 @@ client.on("messageCreate", async (message) => {
       message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
     } else {
       const query = await ScheModel.find({ offday: offday[today] });
-      const rep = (await Promise.all(query.map(async (msg: any) => `${await GetName(msg.id)}`))).join("\n");
+      const rep = (await Promise.all(query.map(async (sche: any) => `${await GetName(sche.id)}`))).join("\n");
       if (rep === "") message.reply(`오늘은 ${offday[today]}요일이네요. \n모두 나오는 날이에요!`);
       else message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님은 쉬시는군요.`);
     }
