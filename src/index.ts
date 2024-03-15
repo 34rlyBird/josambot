@@ -1,6 +1,5 @@
 import { Client, GatewayIntentBits, Partials, Events } from "discord.js";
 import * as dotenv from "dotenv";
-import { Cursor } from "mongoose";
 import ScheModel from "./schemas/schedule";
 import { setupdb } from "./setdb";
 import { GetName } from "./schemas/id2nick";
@@ -29,7 +28,7 @@ client.on("messageCreate", async (message) => {
   } else if (message.content === "!offday" || message.content === "!쉬는날") {
     const query = await ScheModel.find({ id: message.author.username });
     const answer = `${message.member?.nickname}님의 쉬는 날은 ${query
-      .map((msg: Cursor) => `${msg.offday}`)
+      .map((msg: any) => `${msg.offday}`)
       .join("")}요일이네요.`;
     message.reply(answer);
   } else if (
