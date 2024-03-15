@@ -27,20 +27,19 @@ client.on("messageCreate", async (message) => {
     message.reply("Pong!");
   } else if (message.content === "!offday" || message.content === "!쉬는날") {
     const query = await ScheModel.find({ id: message.author.username });
-    const answer = `${message.member?.nickname}님의 쉬는 날은 ${query
-      .map((msg: any) => `${msg.offday}`)
-      .join("")}요일이네요.`;
-    message.reply(answer);
-  } else if (
-    message.content === "!offdayall" ||
-    message.content === "!모두의쉬는날" ||
-    message.content === "!q"
-  ) {
+    message.reply(
+      (
+        await Promise.all(
+          query.map(async (sche: any) => `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`),
+        )
+      ).join("\n"),
+    );
+  } else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
     const query = await ScheModel.find();
     message.reply(
       (
         await Promise.all(
-          query.map(async (msg: any) => `${await GetName(msg.id)}님의 쉬는 날은 ${msg.offday}요일이네요.`),
+          query.map(async (sche: any) => `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`),
         )
       ).join("\n"),
     );
