@@ -31,7 +31,7 @@ client.on("messageCreate", async (message) => {
     message.reply(
       (
         await Promise.all(
-          query.map(async (sche: any) => {
+          query.map(async (sche) => {
             const answer = `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`;
 
             if (GetDay(sche.offday) === new Date(message.createdTimestamp).getDay()) {
@@ -47,7 +47,7 @@ client.on("messageCreate", async (message) => {
     message.reply(
       (
         await Promise.all(
-          query.map(async (sche: any) => `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`),
+          query.map(async (sche) => `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`),
         )
       ).join("\n"),
     );
@@ -58,7 +58,7 @@ client.on("messageCreate", async (message) => {
       message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
     } else {
       const query = await ScheModel.find({ offday: offday[today] });
-      const rep = (await Promise.all(query.map(async (sche: any) => `${await GetName(sche.id)}`))).join("\n");
+      const rep = (await Promise.all(query.map(async (sche) => `${await GetName(sche.id)}`))).join("\n");
       if (rep === "") message.reply(`오늘은 ${offday[today]}요일이네요. \n모두 나오는 날이에요!`);
       else message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님은 쉬시는군요.`);
     }
@@ -95,7 +95,7 @@ client.on("messageReactionAdd", async (reaction, user) => {
 });
 
 // Set up database here
-client.once(Events.ClientReady, async (cli: any) => {
+client.once(Events.ClientReady, async (cli) => {
   const guild = cli.guilds.cache.get(process.env.DISCORD_GUILD_ID!);
 
   if (!guild) {

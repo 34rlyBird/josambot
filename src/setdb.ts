@@ -1,4 +1,4 @@
-import "discord.js";
+import { Guild } from "discord.js";
 import { env } from "process";
 import ScheModel from "./schemas/schedule";
 import ClearCollections from "./db";
@@ -12,12 +12,12 @@ const schedules = env.SEASON3_SCHEDULES.split(",").map((s) => {
   return { id, offday };
 });
 
-const setupdb = async (guild: any) => {
+const setupdb = async (guild: Guild) => {
   await ClearCollections();
   ScheModel.insertMany(schedules);
   console.log("schedules inserted");
-  guild.members.fetch().then((members: any) => {
-    members.forEach((member: any) => {
+  guild.members.fetch().then((members) => {
+    members.forEach((member) => {
       let { nickname } = member;
       if (!nickname) {
         nickname = member.user.displayName;

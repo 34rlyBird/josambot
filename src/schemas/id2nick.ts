@@ -18,7 +18,7 @@ const i2nModel = mongoose.model("Id2Nick", Id2NickSchema);
 
 async function GetName(getid: string) {
   const query = await i2nModel.find({ id: getid });
-  const retName = query.map((rec: any) => `${rec.nick}`).join("");
+  const retName = query.map((rec) => `${rec.nick}`).join("");
   return retName;
 }
 
