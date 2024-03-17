@@ -27,6 +27,7 @@ client.on("messageCreate", async (message) => {
   if (message.content === "!ping") {
     message.reply("Pong!");
   } else if (message.content === "!offday" || message.content === "!쉬는날") {
+    // 메세지는 입력한 사람의 쉬내 날 안내
     const query = await ScheModel.find({ id: message.author.username });
     message.reply(
       (
@@ -43,24 +44,35 @@ client.on("messageCreate", async (message) => {
       ).join("\n"),
     );
   } else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
+    // 모든 회원의 쉬는 날 안내
     const query = await ScheModel.find();
-    message.reply(
-      (
-        await Promise.all(
-          query.map(async (sche) => `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`),
-        )
-      ).join("\n"),
+    const offdays = ["월", "화", "수", "목", "금"];
+    const repArr = await Promise.all(
+      query.map(async (sche) => ({ name: await GetName(sche.id), offday: sche.offday })),
     );
+    let answer = "";
+    for (let i = 0; i < 5; i += 1) {
+      const rep = repArr
+        .filter((sche) => sche.offday === offdays[i])
+        .map((sche) => sche.name)
+        .join(", ")
+        .replace(/, ([^,]*)$/, " 그리고 $1");
+      if (rep !== "") answer += `${rep}님은 ${offdays[i]}요일에 쉬어요!\n`;
+    }
+    message.reply(answer);
   } else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
+    // 오늘 쉬는 사람 안내
     const today = new Date(message.createdTimestamp).getDay();
     const offday = ["일", "월", "화", "수", "목", "금", "토"];
     if (today === 0 || today === 6) {
       message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
     } else {
       const query = await ScheModel.find({ offday: offday[today] });
-      const rep = (await Promise.all(query.map(async (sche) => `${await GetName(sche.id)}`))).join("\n");
+      const rep = (await Promise.all(query.map(async (sche) => `${await GetName(sche.id)}`)))
+        .join(", ")
+        .replace(/, ([^,]*)$/, " 그리고 $1");
       if (rep === "") message.reply(`오늘은 ${offday[today]}요일이네요. \n모두 나오는 날이에요!`);
-      else message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님은 쉬시는군요.`);
+      else message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님이 쉬는 날이에요!`);
     }
   }
   // check if message contains image

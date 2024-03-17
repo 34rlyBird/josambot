@@ -1,13 +1,12 @@
 import { Guild } from "discord.js";
-import { env } from "process";
 import ScheModel from "./schemas/schedule";
 import ClearCollections from "./db";
 import { i2nModel } from "./schemas/id2nick";
 
-if (!env.SEASON3_SCHEDULES) {
+if (!process.env.SEASON3_SCHEDULES) {
   throw new Error("SEASON3_SCHEDULES is not defined");
 }
-const schedules = env.SEASON3_SCHEDULES.split(",").map((s) => {
+const schedules = process.env.SEASON3_SCHEDULES.split(",").map((s) => {
   const [id, offday] = s.split(":");
   return { id, offday };
 });
