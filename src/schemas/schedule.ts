@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
+// Schema for offday schedule of each member
 const ScheduleSchema = new Schema({
   id: {
     type: String,
@@ -15,6 +16,10 @@ const ScheduleSchema = new Schema({
   },
 });
 
+/**
+ * Model can insert, update and so on.
+ * {id: string, offday: string}
+ */
 const scheduleModel = mongoose.model("Schedule", ScheduleSchema);
 
 export default scheduleModel;

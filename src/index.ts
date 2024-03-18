@@ -21,20 +21,23 @@ const client = new Client({
 client.once("ready", () => {
   console.log("Bot is ready");
 });
+// on message
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
   console.log(message.content);
+  // Basic commands
   if (message.content === "!ping") {
     message.reply("Pong!");
-  } else if (message.content === "!offday" || message.content === "!쉬는날") {
-    // 메세지는 입력한 사람의 쉬내 날 안내
+  }
+  // 메세지를 보낸 사람의 쉬는 날 안내
+  else if (message.content === "!offday" || message.content === "!쉬는날") {
     const query = await ScheModel.find({ id: message.author.username });
     message.reply(
       (
         await Promise.all(
           query.map(async (sche) => {
             const answer = `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`;
-
+            // Additional message if today is offday
             if (GetDay(sche.offday) === new Date(message.createdTimestamp).getDay()) {
               return `${answer} 오늘은 쉬는 날이에요!`;
             }
@@ -43,14 +46,16 @@ client.on("messageCreate", async (message) => {
         )
       ).join("\n"),
     );
-  } else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
-    // 모든 회원의 쉬는 날 안내
+  }
+  // 모든 회원의 쉬는 날 안내
+  else if (message.content === "!offdayall" || message.content === "!모두의쉬는날") {
     const query = await ScheModel.find();
     const offdays = ["월", "화", "수", "목", "금"];
     const repArr = await Promise.all(
       query.map(async (sche) => ({ name: await GetName(sche.id), offday: sche.offday })),
     );
     let answer = "";
+    // sort with offday
     for (let i = 0; i < 5; i += 1) {
       const rep = repArr
         .filter((sche) => sche.offday === offdays[i])
@@ -60,13 +65,17 @@ client.on("messageCreate", async (message) => {
       if (rep !== "") answer += `${rep}님은 ${offdays[i]}요일에 쉬어요!\n`;
     }
     message.reply(answer);
-  } else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
-    // 오늘 쉬는 사람 안내
+  }
+  // 오늘 쉬는 사람 안내
+  else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
     const today = new Date(message.createdTimestamp).getDay();
     const offday = ["일", "월", "화", "수", "목", "금", "토"];
+    // if today is weekend
     if (today === 0 || today === 6) {
       message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
-    } else {
+    }
+    // weekday
+    else {
       const query = await ScheModel.find({ offday: offday[today] });
       const rep = (await Promise.all(query.map(async (sche) => `${await GetName(sche.id)}`)))
         .join(", ")
