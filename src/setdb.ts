@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
 import ScheModel from "./schemas/schedule";
-import ClearCollections from "./db";
+import { clearCollection, isColExists } from "./db";
 import { i2nModel } from "./schemas/id2nick";
 
 if (!process.env.SEASON3_SCHEDULES) {
@@ -12,9 +12,16 @@ const schedules = process.env.SEASON3_SCHEDULES.split(",").map((s) => {
 });
 
 const setupdb = async (guild: Guild) => {
-  await ClearCollections();
-  ScheModel.insertMany(schedules);
-  console.log("schedules inserted");
+  const sche = await isColExists("schedules");
+  if (!sche) {
+    // Insert only when the collection is dropped
+    clearCollection("schedules");
+    ScheModel.insertMany(schedules);
+    console.log("schedules inserted");
+  }
+
+  // Insert ID & Nick every time
+  clearCollection("id2nicks");
   guild.members.fetch().then((members) => {
     members.forEach((member) => {
       let { nickname } = member;
