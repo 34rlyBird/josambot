@@ -1,17 +1,25 @@
-import mongoose = require("mongoose");
+import mongoose from "mongoose";
+
 const { Schema } = mongoose;
 
+// Schema for offday schedule of each member
 const ScheduleSchema = new Schema({
-  name: {
+  id: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
   },
   offday: {
     type: String,
-    enum: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-    required: true
-  }
-})
+    enum: ["월", "화", "수", "목", "금"],
+    required: true,
+  },
+});
 
-module.exports = mongoose.model("Schedule", ScheduleSchema);
+/**
+ * Model can insert, update and so on.
+ * {id: string, offday: string}
+ */
+const scheduleModel = mongoose.model("Schedule", ScheduleSchema);
+
+export default scheduleModel;
