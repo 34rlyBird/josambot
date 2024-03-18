@@ -20,23 +20,24 @@ const setupdb = async (guild: Guild) => {
   const sche = await isColExists("schedules");
   if (!sche) {
     // Insert only when the collection is dropped
-    dropCollection("schedules");
-    ScheModel.insertMany(schedules);
+    await dropCollection("schedules");
+    await ScheModel.insertMany(schedules);
     console.log("schedules inserted");
   }
 
   // Insert ID & Nick every time
-  dropCollection("id2nicks");
-  guild.members.fetch().then((members) => {
-    members.forEach((member) => {
+  await dropCollection("id2nicks");
+  const members = await guild.members.fetch();
+  await Promise.all(
+    members.map(async (member) => {
       let { nickname } = member;
       if (!nickname) {
         nickname = member.user.displayName;
       }
       const mem = { id: member.user.username, nick: nickname };
-      i2nModel.create(mem);
-    });
-  });
+      await i2nModel.create(mem);
+    }),
+  );
   console.log("id2nicks inserted");
 };
 

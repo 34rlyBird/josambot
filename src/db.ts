@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 // connect to mongodb
 const dbUrl = "mongodb://localhost:27017/josambot";
 
-mongoose.connect(dbUrl);
+// mongoose does not require to await
+void mongoose.connect(dbUrl);
 
 const db = mongoose.connection;
 
@@ -18,21 +19,19 @@ db.on("error", handleError);
 /**
  * Drop collection with name
  * Actually, you must add new code for new collection
+ * @throws {Error} - if invalid collection name
  * @param {string} colname  - collection name
  */
 async function dropCollection(colname: string) {
   if (colname === "schedules") {
     const scheDocs = mongoose.connection.collections.schedules;
-    if (scheDocs) {
-      scheDocs.drop().then(() => console.log("schedules collection dropped"));
-    }
-  }
-  if (colname === "id2nicks") {
+    await scheDocs.drop();
+    console.log("schedules collection dropped");
+  } else if (colname === "id2nicks") {
     const idDocs = mongoose.connection.collections.id2nicks;
-    if (idDocs) {
-      idDocs.drop().then(() => console.log("id2nicks collection dropped"));
-    }
-  }
+    await idDocs.drop();
+    console.log("id2nicks collection dropped");
+  } else throw new Error("Invalid collection name");
 }
 
 /**
@@ -41,17 +40,8 @@ async function dropCollection(colname: string) {
  * @returns {boolean}
  */
 async function isColExists(colname: string): Promise<boolean> {
-  if (colname === "schedules") {
-    const scheDocs = mongoose.connection.collections.schedules;
-    if (scheDocs) return true;
-    return false;
-  }
-  if (colname === "id2nicks") {
-    const idDocs = mongoose.connection.collections.id2nicks;
-    if (idDocs) return true;
-    return false;
-  }
-  return false;
+  const cols = await mongoose.connection.listCollections();
+  return cols.some((col) => col.name === colname);
 }
 
 export { dropCollection, isColExists };
