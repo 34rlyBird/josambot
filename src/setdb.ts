@@ -18,12 +18,11 @@ const schedules = process.env.SEASON3_SCHEDULES.split(",").map((s) => {
  */
 const setupdb = async (guild: Guild) => {
   const sche = await isColExists("schedules");
-  if (!sche) {
-    // Insert only when the collection is dropped
-    await dropCollection("schedules");
-    await ScheModel.insertMany(schedules);
-    console.log("schedules inserted");
-  }
+
+  // Insert only when the collection is dropped
+  await dropCollection("schedules");
+  await ScheModel.insertMany(schedules);
+  console.log("schedules inserted");
 
   // Insert ID & Nick every time
   await dropCollection("id2nicks");
