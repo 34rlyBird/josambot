@@ -27,16 +27,17 @@ client.on("messageCreate", async (message) => {
   console.log(message.content);
   // Basic commands
   if (message.content === "!ping") {
-    message.reply("Pong!");
+    await message.reply("Pong!");
   }
   // 메세지를 보낸 사람의 쉬는 날 안내
   else if (message.content === "!offday" || message.content === "!쉬는날") {
     const query = await ScheModel.find({ id: message.author.username });
-    message.reply(
+    await message.reply(
       (
         await Promise.all(
           query.map(async (sche) => {
-            const answer = `${await GetName(sche.id)}님의 쉬는 날은 ${sche.offday}요일이네요.`;
+            // Document.id is typed as any by mongoose
+            const answer = `${await GetName(sche.id as string)}님의 쉬는 날은 ${sche.offday}요일이네요.`;
             // Additional message if today is offday
             if (GetDay(sche.offday) === new Date(message.createdTimestamp).getDay()) {
               return `${answer} 오늘은 쉬는 날이에요!`;
@@ -52,7 +53,8 @@ client.on("messageCreate", async (message) => {
     const query = await ScheModel.find();
     const offdays = ["월", "화", "수", "목", "금"];
     const repArr = await Promise.all(
-      query.map(async (sche) => ({ name: await GetName(sche.id), offday: sche.offday })),
+      // Document.id is typed as any by mongoose
+      query.map(async (sche) => ({ name: await GetName(sche.id as string), offday: sche.offday })),
     );
     let answer = "";
     // sort with offday
@@ -64,7 +66,7 @@ client.on("messageCreate", async (message) => {
         .replace(/, ([^,]*)$/, " 그리고 $1");
       if (rep !== "") answer += `${rep}님은 ${offdays[i]}요일에 쉬어요!\n`;
     }
-    message.reply(answer);
+    await message.reply(answer);
   }
   // 오늘 쉬는 사람 안내
   else if (message.content === "!todayoffmem" || message.content === "!쉬는사람") {
@@ -72,23 +74,23 @@ client.on("messageCreate", async (message) => {
     const offday = ["일", "월", "화", "수", "목", "금", "토"];
     // if today is weekend
     if (today === 0 || today === 6) {
-      message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
+      await message.reply("오늘은 주말! 조삼모사를 하지 않는 날이네요.");
     }
     // weekday
     else {
       const query = await ScheModel.find({ offday: offday[today] });
-      const rep = (await Promise.all(query.map(async (sche) => `${await GetName(sche.id)}`)))
+      // Document.id is typed as any by mongoose
+      const rep = (await Promise.all(query.map(async (sche) => `${await GetName(sche.id as string)}`)))
         .join(", ")
         .replace(/, ([^,]*)$/, " 그리고 $1");
-      if (rep === "") message.reply(`오늘은 ${offday[today]}요일이네요. \n모두 나오는 날이에요!`);
-      else message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님이 쉬는 날이에요!`);
+      if (rep === "") await message.reply(`오늘은 ${offday[today]}요일이네요. \n모두 나오는 날이에요!`);
+      else await message.reply(`오늘은 ${offday[today]}요일이네요. \n${rep}님이 쉬는 날이에요!`);
     }
   }
   // check if message contains image
   if (message.attachments.some((attachment) => attachment.contentType?.startsWith("image"))) {
     // add +1, -1 reaction
-    message.react("👍");
-    message.react("👎");
+    await Promise.all([message.react("👍"), message.react("👎")]);
   }
 });
 // on reaction
@@ -127,4 +129,4 @@ client.once(Events.ClientReady, async (cli) => {
   await setupdb(guild);
 });
 
-client.login(token);
+void client.login(token);

@@ -1,6 +1,6 @@
 import { Guild } from "discord.js";
 import ScheModel from "./schemas/schedule";
-import { dropCollection, isColExists } from "./db";
+import { dropCollection } from "./db";
 import { i2nModel } from "./schemas/id2nick";
 
 // Initialize schedule data from env
@@ -17,26 +17,24 @@ const schedules = process.env.SEASON3_SCHEDULES.split(",").map((s) => {
  * @param {Guild} guild - guild to setup
  */
 const setupdb = async (guild: Guild) => {
-  const sche = await isColExists("schedules");
-  if (!sche) {
-    // Insert only when the collection is dropped
-    dropCollection("schedules");
-    ScheModel.insertMany(schedules);
-    console.log("schedules inserted");
-  }
+  // Insert only when the collection is dropped
+  await dropCollection("schedules");
+  await ScheModel.insertMany(schedules);
+  console.log("schedules inserted");
 
   // Insert ID & Nick every time
-  dropCollection("id2nicks");
-  guild.members.fetch().then((members) => {
-    members.forEach((member) => {
+  await dropCollection("id2nicks");
+  const members = await guild.members.fetch();
+  await Promise.all(
+    members.map(async (member) => {
       let { nickname } = member;
       if (!nickname) {
         nickname = member.user.displayName;
       }
       const mem = { id: member.user.username, nick: nickname };
-      i2nModel.create(mem);
-    });
-  });
+      await i2nModel.create(mem);
+    }),
+  );
   console.log("id2nicks inserted");
 };
 

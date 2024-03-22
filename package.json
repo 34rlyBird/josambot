@@ -8,7 +8,9 @@
   "license": "MIT",
   "scripts": {
     "start": "bun run ./src/index.ts",
-    "watch": "bun --watch ./src/index.ts"
+    "watch": "bun --watch ./src/index.ts",
+    "lint": "eslint src --ext .ts",
+    "pretty": "prettier --write src"
   },
   "devDependencies": {
     "@types/node": "^20.11.25",
@@ -31,6 +33,6 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "mongodb": "6.4",
-    "mongoose": "^8.2.1"
+    "mongoose": "^8.2.2"
   }
 }

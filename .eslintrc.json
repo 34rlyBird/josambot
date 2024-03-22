@@ -6,7 +6,7 @@
   "extends": [
     "eslint:recommended",
     "plugin:import/recommended",
-    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-type-checked",
     "airbnb-base",
     "prettier"
   ],
@@ -14,7 +14,8 @@
   "parserOptions": {
     "parser": "@typescript-eslint/parser",
     "ecmaVersion": "latest",
-    "sourceType": "module"
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
   "settings": {
     "import/parsers": {
@@ -44,9 +45,13 @@
   "rules": {
     "prettier/prettier": "error",
     "unused-imports/no-unused-imports": "error",
-    "no-unused-vars": "off",
-    "@typescript-eslint/no-unused-vars": "off",
     "no-console": "off",
+    "no-void": [
+      "error",
+      {
+        "allowAsStatement": true
+      }
+    ],
     "import/extensions": [
       "error",
       "ignorePackages",
@@ -56,6 +61,7 @@
         "ts": "never",
         "tsx": "never"
       }
-    ]
+    ],
+    "import/prefer-default-export": "off"
   }
 }
