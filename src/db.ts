@@ -34,14 +34,4 @@ async function dropCollection(colname: string) {
   } else throw new Error("Invalid collection name");
 }
 
-/**
- * Return true if collection exists
- * @param {string} colname - collection name
- * @returns {boolean}
- */
-async function isColExists(colname: string): Promise<boolean> {
-  const cols = await mongoose.connection.listCollections();
-  return cols.some((col) => col.name === colname);
-}
-
-export { dropCollection, isColExists };
+export { dropCollection };
